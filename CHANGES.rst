@@ -4,7 +4,9 @@ Changelog
 2.4.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix problem where comments on private content was publicly available
+  in search results.
+  [vangheem]
 
 
 2.4.3 (2015-06-05)

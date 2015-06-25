@@ -11,4 +11,13 @@
       handler=".upgrades.update_registry"
       />
 
+  <genericsetup:upgradeStep
+      source="*"
+      destination="103"
+      title="Update plone.app.discussion workflows"
+      description=""
+      profile="plone.app.discussion:default"
+      handler=".upgrades.upgrade_comment_workflows"
+      />
+
 </configure>
