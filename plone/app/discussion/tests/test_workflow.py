@@ -171,6 +171,26 @@ class CommentOneStateWorkflowTest(unittest.TestCase):
         logout()
         self.assertFalse(checkPerm(View, self.comment))
 
+    def test_migration(self):
+        from plone.app.discussion.upgrades import upgrade_comment_workflows
+        # Fake permission according to earlier one_comment_workflow.
+        self.comment._View_Permission = ('Anonymous',)
+        # Anonymous can see the comment.
+        logout()
+        self.assertTrue(checkPerm(View, self.comment))
+        # Run the upgrade.
+        login(self.portal, TEST_USER_NAME)
+        upgrade_comment_workflows(self.portal.portal_setup)
+        # The workflow chain is still what we want.
+        self.assertEqual(
+            self.portal.portal_workflow.getChainFor('Discussion Item'),
+            ('comment_one_state_workflow',))
+        # A Manager can still see the comment.
+        self.assertTrue(checkPerm(View, self.comment))
+        # Anonymous cannot see the comment.
+        logout()
+        self.assertFalse(checkPerm(View, self.comment))
+
 
 class CommentReviewWorkflowTest(unittest.TestCase):
     """Test the comment_review_workflow that ships with plone.app.discussion.
@@ -286,5 +306,25 @@ class CommentReviewWorkflowTest(unittest.TestCase):
         workflow = self.portal.portal_workflow
         workflow.doActionFor(self.comment, 'publish')
 
+        logout()
+        self.assertFalse(checkPerm(View, self.comment))
+
+    def test_migration(self):
+        from plone.app.discussion.upgrades import upgrade_comment_workflows
+        # Fake permission according to earlier comment_review_workflow.
+        self.comment._View_Permission = ('Anonymous',)
+        # Anonymous can see the comment.
+        logout()
+        self.assertTrue(checkPerm(View, self.comment))
+        # Run the upgrade.
+        login(self.portal, TEST_USER_NAME)
+        upgrade_comment_workflows(self.portal.portal_setup)
+        # The workflow chain is still what we want.
+        self.assertEqual(
+            self.portal.portal_workflow.getChainFor('Discussion Item'),
+            ('comment_review_workflow',))
+        # A Manager can still see the comment.
+        self.assertTrue(checkPerm(View, self.comment))
+        # Anonymous cannot see the comment.
         logout()
         self.assertFalse(checkPerm(View, self.comment))
